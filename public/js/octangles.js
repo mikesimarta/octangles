@@ -7,6 +7,11 @@ $(document).ready(function() {
       initTypeahead();
    });
 
+   $('#add_tutor').click(function() {
+      $('#tutor').show();
+      $('add_tutor').hide();
+   });
+
    $('#add_courseTutor').click(function() {
       $('#courseTutor_div').append($('#courseTutor_copy').clone().removeAttr("id").show());
       initTypeahead();
