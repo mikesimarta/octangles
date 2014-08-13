@@ -15,6 +15,7 @@ class Octangles < Sinatra::Base
      def get_params
        @timetables = []
        @input_courses = params[:courses]
+       @input_coursesTutor = params[:coursesTutor]
        @clash = params[:clash]
        @sort_by = params[:sort_by]
        @sort_by_ordered = params[:sort_by_ordered]
@@ -37,16 +38,28 @@ class Octangles < Sinatra::Base
      get_params
 
      courses = []
+     coursesTutor = []
      warnings = []
 
      course_names = @input_courses.split(',').map{|x| x.strip.upcase}.select{|x| x != '' }.uniq
+     courseTutor_names = @input_coursesTutor.split(',').map{|x| x.strip.upcase}.select{|x| x != '' }.uniq
+
 
      course_names.each do |c|
        new_course = Course.new(c, warnings, :include_closed => 
                                             @include_closed)
+     courseTutor_names.each do |c|
+       new_courseTutor = Course.new(c, warnings, :include_closed => 
+                                            true)
 
        if new_course.activities != {}
          courses << new_course
+       else
+         warnings << "No classes found for #{c}"
+       end
+
+       if new_courseTutor.activities != {}
+         coursesTutor << new_courseTutor
        else
          warnings << "No classes found for #{c}"
        end
@@ -55,11 +68,11 @@ class Octangles < Sinatra::Base
      force_courses = @force_courses.split(',');
      force_course_times = @force_course_times.split(',');
 
-     timetables = Timetabler::generate(courses, :clash => @clash.to_i,
+     timetables = Timetabler::generate(courses, courseTutor, :clash => @clash.to_i,
                                                  :sort_by => @sort_by_ordered,
                                                  :force_courses => 
                                                    force_courses.zip(force_course_times))
 
-     {:timetables => timetables, :courses => course_names, :warnings => warnings.uniq}.to_json
+     {:timetables => timetables, :courses => course_names, :coursesTutor => courseTutor_names, :warnings => warnings.uniq}.to_json
    end
 end

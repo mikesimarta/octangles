@@ -157,12 +157,16 @@ module Timetabler
     end
   end
 
-  def Timetabler.generate(courses=[], options={})
+  def Timetabler.generate(courses=[], coursesTutor=[], options={})
     timetables = [] 
     required = []
 
     # required is an array of activity sections
     courses.each do |c|
+      required += c.activities.values
+    end
+
+    coursesTutor.each do |c|
       required += c.activities.values
     end
 

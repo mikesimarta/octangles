@@ -7,6 +7,11 @@ $(document).ready(function() {
       initTypeahead();
    });
 
+   $('#add_courseTutor').click(function() {
+      $('#courseTutor_div').append($('#courseTutor_copy').clone().removeAttr("id").show());
+      initTypeahead();
+   });
+
    $('#add_force').click(function() {
       $('#force_div').append($('#force_copy').clone().removeAttr("id").show());
       fuckIE();
@@ -71,6 +76,7 @@ function generateTimetables() {
    showSpinner();
 
    var courses = [];
+   var coursesTutor = [];
    var force_courses = [];
    var force_course_times = [];
 
@@ -89,12 +95,18 @@ function generateTimetables() {
    });
    force_course_times = force_course_times.join(",");
 
+   $('.courseTutor').each(function(index, val) {
+      coursesTutor.push($(val).val());
+   });
+   coursesTutor = coursesTutor.join(",");
+
    $.ajax({
       url: "generate.json",
       type: "POST",
 
       data: {
          courses: courses,
+         coursesTutor: coursesTutor,
          clash: $('#clash').val(),
          sort_by_ordered: $('#sort_by_ordered').val(),
          force_courses: force_courses,
